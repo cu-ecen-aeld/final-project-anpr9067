@@ -10,10 +10,14 @@ ifeq ($(LDFLAGS),)
 	LDFLAGS = -pthread -lrt
 endif
 
-all:server
+all:server client
 
 server: Driver/server.c
 	$(CC) $(CFLAGS) Driver/server.c -o server $(LDFLAGS)
 
+client: Driver/client.c
+	$(CC) $(CFLAGS) Driver/client.c -o client $(LDFLAGS)
+
 clean:
-	$(RM) aesdsocket
+	$(RM) server
+	$(RM) client
