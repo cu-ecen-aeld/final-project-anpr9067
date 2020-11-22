@@ -10,7 +10,7 @@ ifeq ($(LDFLAGS),)
 	LDFLAGS = -pthread -lrt
 endif
 
-all:server client
+all:server client i2c
 
 server: Driver/server.c
 	$(CC) $(CFLAGS) Driver/server.c -o server $(LDFLAGS)
@@ -18,6 +18,8 @@ server: Driver/server.c
 client: Driver/client.c
 	$(CC) $(CFLAGS) Driver/client.c -o client $(LDFLAGS)
 
+i2c: Driver/i2c_driver.c
+	$(CC) $(CFLAGS) Driver/i2c_driver.c -o i2c_driver $(LDFLAGS)
 clean:
 	$(RM) server
 	$(RM) client
