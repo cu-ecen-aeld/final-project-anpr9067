@@ -1,13 +1,19 @@
 // Client side C/C++ program to demonstrate Socket programming 
 #include <stdio.h> 
-#include <stdlib.h>
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h> 
 #include <string.h> 
-#include <syslog.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <linux/i2c-dev.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #define PORT 9000 
 
 int main(int argc, char const *argv[]) 
