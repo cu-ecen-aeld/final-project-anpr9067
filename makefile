@@ -23,3 +23,4 @@ i2c: Driver/i2c_driver.c
 clean:
 	$(RM) server
 	$(RM) client
+	$(RM) i2c_driver
