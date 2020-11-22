@@ -30,7 +30,7 @@ int main(void){
         exit(1);
     }
 
-    unsigned char buf[10] = {0};
+    //unsigned char buf[10] = {0};
      
     // for (int i = 0; i<4; i++) {
     //     // Using I2C Read
