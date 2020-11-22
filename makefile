@@ -19,8 +19,8 @@ client: Driver/client.c
 	$(CC) $(CFLAGS) Driver/client.c -o client $(LDFLAGS)
 
 i2c: Driver/i2c_driver.c
-	$(CC) $(CFLAGS) Driver/i2c_driver.c -o i2c_driver $(LDFLAGS)
+	$(CC) $(CFLAGS) Driver/i2c_driver.c -o i2cdriver $(LDFLAGS)
 clean:
 	$(RM) server
 	$(RM) client
-	$(RM) i2c_driver
+	$(RM) i2cdriver
