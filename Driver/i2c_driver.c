@@ -20,6 +20,7 @@ int main(void){
 	if ((file = open(filename, O_RDWR)) < 0) {
         /* ERROR HANDLING: you can check errno to see what went wrong */
     perror("Failed to open the i2c bus");
+    printf("Failed to open the i2c bus.\n");
     exit(1);
     }
      
@@ -29,17 +30,32 @@ int main(void){
         /* ERROR HANDLING; you can check errno to see what went wrong */
         exit(1);
     }
+    printf("Passed\n");
+    /*__u8 reg = 0x28; 
+  	__s32 res;
+  	//char buf[10]; 
+  	res = i2c_smbus_read_word_data(file, reg);
+  	if (res < 0) {
+    	
+    	printf("failed");
+  	} else {
+    	
+    		printf("%d word\n", res);
+  	}*/
+    unsigned char buf[10] = {0};
+    //unsigned char X_MSB, X_LSB, Y_MSB, Y_LSB, Z_MSB, Z_LSB;
 
-    //unsigned char buf[10] = {0};
-     
-    // for (int i = 0; i<4; i++) {
-    //     // Using I2C Read
-    //     if (read(file,buf,2) != 2) {
-    //         /* ERROR HANDLING: i2c transaction failed */
-    //         printf("Failed to read from the i2c bus: %s.\n", strerror(errno));
-    //             printf("\n\n");
-    //     } else {
-    //         /* Device specific stuff here */
-    //     }
-    // }
+    for (int i = 0; i<2; i++) {
+        // Using I2C Read
+        int readval = read(file,buf,2);
+        printf("readval : %d\n", readval);
+        if (readval != 2) {
+            /* ERROR HANDLING: i2c transaction failed */
+            printf("Failed to read from the i2c bus: %s.\n", strerror(errno));
+                printf("\n\n");
+        } else {
+        	printf("to do calculation\n");
+            /* Device specific stuff here */
+        }
+    }
 }
