@@ -25,7 +25,7 @@ int main(void){
     exit(1);
     }
      
-	int addr = 0x30;     // The I2C address of the device A+ SAD_W
+	int addr = 0x18;     // The I2C slave address of the device 
     if (ioctl(file, I2C_SLAVE, addr) < 0) {
         printf("Failed to acquire bus access and/or talk to slave.\n");
         /* ERROR HANDLING; you can check errno to see what went wrong */
