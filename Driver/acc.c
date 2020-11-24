@@ -90,7 +90,7 @@ static int get_i2c_register(int file,
 
 int main(int argc, char **argv) {
     int i2c_file;
-    int8_t x, y, z;  // the readings are 8 bits and signed!
+    unsigned char x, y, z;  // the readings are 8 bits and signed!
 
     // Open a connection to the I2C userspace control file.
     if ((i2c_file = open(I2C_FILE_NAME, O_RDWR)) < 0) {
@@ -103,9 +103,9 @@ int main(int argc, char **argv) {
     //while (1) {
       
       // read X and Y and Z from the register
-      if( get_i2c_register(i2c_file, MMA7455_I2CADDR, MMA7455_XOUT8, &x) ||
-	  get_i2c_register(i2c_file, MMA7455_I2CADDR, MMA7455_YOUT8, &y) ||
-	  get_i2c_register(i2c_file, MMA7455_I2CADDR, MMA7455_ZOUT8, &z) ) {
+      if( get_i2c_register(i2c_file, LIS331_I2CADDR, LIS331_XOUT8, &x) ||
+	  get_i2c_register(i2c_file, LIS331_I2CADDR, LIS331_YOUT8, &y) ||
+	  get_i2c_register(i2c_file, LIS331_I2CADDR, LIS331_ZOUT8, &z) ) {
 
 	       printf("Unable to read register!\n");
 	       return -1;
