@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <linux/i2c-dev.h>
+#include <linux/i2c.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -24,7 +25,7 @@ int main(void){
     exit(1);
     }
      
-	int addr = 0x31;     // The I2C address of the device
+	int addr = 0x30;     // The I2C address of the device A+ SAD_W
     if (ioctl(file, I2C_SLAVE, addr) < 0) {
         printf("Failed to acquire bus access and/or talk to slave.\n");
         /* ERROR HANDLING; you can check errno to see what went wrong */
@@ -44,6 +45,10 @@ int main(void){
   	}*/
     unsigned char buf[10] = {0};
     //unsigned char X_MSB, X_LSB, Y_MSB, Y_LSB, Z_MSB, Z_LSB;
+    int writeval = write(file, 0x28, 1);
+    if(writeval == -1){
+    	printf("Error in write\n");
+    }
 
     for (int i = 0; i<2; i++) {
         // Using I2C Read
@@ -52,7 +57,7 @@ int main(void){
         if (readval != 2) {
             /* ERROR HANDLING: i2c transaction failed */
             printf("Failed to read from the i2c bus: %s.\n", strerror(errno));
-                printf("\n\n");
+                printf("\n");
         } else {
         	printf("to do calculation\n");
             /* Device specific stuff here */
