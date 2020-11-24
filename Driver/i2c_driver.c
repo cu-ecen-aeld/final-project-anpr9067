@@ -50,9 +50,9 @@ int main(void){
     	printf("Error in write\n");
     }
 
-    for (int i = 0; i<2; i++) {
+    for (int i = 0; i<6; i++) {
         // Using I2C Read
-        int readval = read(file,buf,6);
+        int readval = read(file,buf,2);
         printf("readval : %d\n", readval);
         if (readval != 2) {
             /* ERROR HANDLING: i2c transaction failed */
@@ -60,6 +60,7 @@ int main(void){
                 printf("\n");
         } else {
         	printf("to do calculation\n");
+        	printf("%x %x\n", buf[0], buf[1]);
             /* Device specific stuff here */
         }
     }
