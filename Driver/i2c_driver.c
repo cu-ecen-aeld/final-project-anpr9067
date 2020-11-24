@@ -47,7 +47,7 @@ int main(void){
     //unsigned char X_MSB, X_LSB, Y_MSB, Y_LSB, Z_MSB, Z_LSB;
     int writeval = write(file, 0x31, 1);
     if(writeval == -1){
-    	printf("Error in write\n");
+    	printf("Error in write: %s\n", strerror(errno));
     }
 
     for (int i = 0; i<6; i++) {
