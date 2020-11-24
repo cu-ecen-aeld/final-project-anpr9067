@@ -55,7 +55,7 @@ int main(void){
         // Using I2C Read
         int readval = read(file,buf,6);
         printf("readval : %d\n", readval);
-        if (readval != 2) {
+        if (readval != 6) {
             /* ERROR HANDLING: i2c transaction failed */
             printf("Failed to read from the i2c bus: %s.\n", strerror(errno));
                 printf("\n");
