@@ -45,7 +45,7 @@ int main(void){
   	}*/
     unsigned char buf[10] = {0};
     //unsigned char X_MSB, X_LSB, Y_MSB, Y_LSB, Z_MSB, Z_LSB;
-    int writeval = write(file, 0x30, 1);
+    int writeval = write(file, 0x31, 1);
     if(writeval == -1){
     	printf("Error in write\n");
     }
