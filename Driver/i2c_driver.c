@@ -17,7 +17,7 @@
 
 int main(void){
 	int file;
-	char *filename = "/dev/i2c-1";
+	char *filename = "/dev/i2c-2";
 	if ((file = open(filename, O_RDWR)) < 0) {
         /* ERROR HANDLING: you can check errno to see what went wrong */
     perror("Failed to open the i2c bus");
