@@ -52,15 +52,17 @@ int main(void){
 
     for (int i = 0; i<6; i++) {
         // Using I2C Read
-        int readval = read(file,buf,2);
+        int readval = read(file,buf,6);
         printf("readval : %d\n", readval);
-        if (readval != 2) {
+        if (readval != 6) {
             /* ERROR HANDLING: i2c transaction failed */
             printf("Failed to read from the i2c bus: %s.\n", strerror(errno));
                 printf("\n");
         } else {
         	printf("to do calculation\n");
         	printf("%x %x\n", buf[0], buf[1]);
+        	printf("%x %x\n", buf[2], buf[3]);
+        	printf("%x %x\n", buf[4], buf[5]);
             /* Device specific stuff here */
         }
     }
