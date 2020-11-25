@@ -9,9 +9,81 @@
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <syslog.h>
+#include <signal.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <string.h>
 
-void main() 
+
+pthread_mutex_t mutex;
+
+void sig_handler(int signo){
+	if(signo == SIGINT){
+		syslog(LOG_INFO, "Caught signal, exiting");
+		if (remove("/var/tmp/accdata.txt") ==0){
+			syslog(LOG_INFO, "Deleted /var/tmp/accdata");
+		}
+		else{
+			syslog(LOG_INFO, "Unable to delete the file");
+		}
+		exit(1);
+	}
+	if(signo == SIGTERM){
+		syslog(LOG_INFO, "Caught signal, exiting");
+		if (remove("/var/tmp/accdata.txt") ==0){
+			syslog(LOG_INFO, "Deleted /var/tmp/accdata");
+		}
+		else{
+			syslog(LOG_INFO, "Unable to delete the file");
+		}
+		exit(1);
+	}
+}
+
+int append_file(char *buffer, size_t size){
+	int recvMsgSize;
+	int fd = open("/var/tmp/accdata.txt", O_RDWR|O_CREAT|O_APPEND, S_IRWXU|S_IRWXG|S_IRWXO);
+    if(fd<0){
+    	syslog(LOG_INFO,"Error in opening file");
+    	return -1;
+    }
+    pthread_mutex_lock(&mutex);
+
+    recvMsgSize = write(fd, buffer, size);
+    if(recvMsgSize<0){
+    	syslog(LOG_INFO, "error in write");
+    }
+
+    pthread_mutex_unlock(&mutex);
+    close(fd);
+    return 0;
+}
+
+
+int main(int argc, char const *argv []) 
 {
+	struct sigaction sa;
+
+	sa.sa_handler = sig_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART; /* Restart functions*/
+
+    if (sigaction(SIGINT, &sa, NULL) == -1){
+    	syslog(LOG_ERR, "Error in siginit");
+    }
+    if (sigaction(SIGTERM, &sa, NULL) == -1){
+    	syslog(LOG_ERR, "Error in siginit");
+    }
+    syslog(LOG_INFO,"Signal check init \n"); 
+
+    if (pthread_mutex_init(&mutex, NULL) != 0) { 
+        printf("\n mutex init has failed\n"); 
+        return 1; 
+    } 
+
 	// Create I2C bus
 	int file;
 	char *bus = "/dev/i2c-2";
@@ -40,7 +112,8 @@ void main()
 	// Read 6 bytes of data
 	// lsb first
 	// Read xAccl lsb data from register(0x28)
-	//while(1){
+	while(1){
+		char *val = (char*)malloc(sizeof(char));
 		char reg[1] = {0x28};
 		write(file, reg, 1);
 		char data[1] = {0};
@@ -107,5 +180,12 @@ void main()
 		printf("Acceleration in X-Axis : %d \n", xAccl);
 		printf("Acceleration in Y-Axis : %d \n", yAccl);
 		printf("Acceleration in Z-Axis : %d \n", zAccl);
-	//}
+
+		sprintf(val, "X:%d Y:%d Z:%d\n", xAccl, yAccl, zAccl);
+
+		append_file(val, strlen(val));
+
+		free(val);
+	}
+	
 }
