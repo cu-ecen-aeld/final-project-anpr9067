@@ -14,7 +14,7 @@ void main()
 {
 	// Create I2C bus
 	int file;
-	char *bus = "/dev/i2c-1";
+	char *bus = "/dev/i2c-2";
 	if((file = open(bus, O_RDWR)) < 0) 
 	{
 		printf("Failed to open the bus. \n");
