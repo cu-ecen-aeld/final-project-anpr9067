@@ -40,7 +40,7 @@ void main()
 	// Read 6 bytes of data
 	// lsb first
 	// Read xAccl lsb data from register(0x28)
-	while(1){
+	//while(1){
 		char reg[1] = {0x28};
 		write(file, reg, 1);
 		char data[1] = {0};
@@ -83,18 +83,21 @@ void main()
 		
 		// Convert the data
 		int xAccl = (data_1 * 256 + data_0);
+		printf("x: %x  %x", data_1, data_0);
 		if(xAccl > 32767)
 		{
 			xAccl -= 65536;
 		}
 
 		int yAccl = (data_3 * 256 + data_2);
+		printf("y: %x  %x", data_3, data_2);
 		if(yAccl > 32767)
 		{
 			yAccl -= 65536;
 		}
 
 		int zAccl = (data_5 * 256 + data_4);
+		printf("z: %x  %x", data_5, data_4);
 		if(zAccl > 32767)
 		{
 			zAccl -= 65536;
@@ -104,5 +107,5 @@ void main()
 		printf("Acceleration in X-Axis : %d \n", xAccl);
 		printf("Acceleration in Y-Axis : %d \n", yAccl);
 		printf("Acceleration in Z-Axis : %d \n", zAccl);
-	}
+	//}
 }
