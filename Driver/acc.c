@@ -40,7 +40,7 @@ All rights reserved.
 #include <string.h>
 
 // The 'raw' 7 bit address shifted up 
-#define LIS331_I2CADDR (0x18 * 2)
+#define LIS331_I2CADDR (0x18)
 
 // The registers to read!
 #define LIS331_XOUT8 0x28
