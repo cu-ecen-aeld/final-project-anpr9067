@@ -1,144 +1,106 @@
-#include <stdio.h> 
-#include <sys/socket.h> 
-#include <arpa/inet.h> 
-#include <unistd.h> 
-#include <string.h> 
-#include <errno.h>
-#include <string.h>
+// Distributed with a free-will license.
+// Use it any way you want, profit or free, provided it fits in the licenses of its associated works.
+// LIS331HH
+// This code is designed to work with the LIS331HH_I2CS I2C Mini Module available from ControlEverything.com.
+// https://www.controleverything.com/content/Accelorometer?sku=LIS331HH_I2CS#tabs-0-product_tabset-2
+
+#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <linux/i2c-dev.h>
-#include <linux/i2c.h>
 #include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 
-
-int main(void){
+void main() 
+{
+	// Create I2C bus
 	int file;
-	char *filename = "/dev/i2c-2";
-	if ((file = open(filename, O_RDWR)) < 0) {
-        /* ERROR HANDLING: you can check errno to see what went wrong */
-    perror("Failed to open the i2c bus");
-    printf("Failed to open the i2c bus.\n");
-    exit(1);
-    }
-     
-	int addr = 0x30;     // The I2C slave address of the device 
-    if (ioctl(file, I2C_SLAVE, addr) < 0) {
-        printf("Failed to acquire bus access and/or talk to slave.\n");
-        /* ERROR HANDLING; you can check errno to see what went wrong */
-        exit(1);
-    }
-    printf("Passed\n");
-    /*__u8 reg = 0x28; 
-  	__s32 res;
-  	//char buf[10]; 
-  	res = i2c_smbus_read_word_data(file, reg);
-  	if (res < 0) {
-    	
-    	printf("failed");
-  	} else {
-    	
-    		printf("%d word\n", res);
-  	}*/
-    unsigned char buf[10] = {0};
-    unsigned char w[1] = {0x28};
-    //unsigned char X_MSB, X_LSB, Y_MSB, Y_LSB, Z_MSB, Z_LSB;
-    int writeval = write(file, w, 1);
-    if(writeval == -1){
-    	printf("Error in write\n");
-    }
+	char *bus = "/dev/i2c-1";
+	if((file = open(bus, O_RDWR)) < 0) 
+	{
+		printf("Failed to open the bus. \n");
+		exit(1);
+	}
+	// Get I2C device, LIS331HH I2C address is 0x18(24)
+	ioctl(file, I2C_SLAVE, 0x18);
 
-    printf("writeval %d\n", writeval);
-    for (int i = 0; i<1; i++) {
-        // Using I2C Read
-        int readval = read(file,buf,2);
-        printf("readval : %d\n", readval);
-        if (readval == -1) {
-            /* ERROR HANDLING: i2c transaction failed */
-            printf("Failed to read from the i2c bus: %s.\n", strerror(errno));
-                printf("\n");
-        } else {
-        	printf("to do calculation\n");
-        	printf("%x %x\n", buf[0], buf[1]);
-            /* Device specific stuff here */
-        }
-    }
+	// Select control register1(0x20)
+	// X, Y and Z axis enabled, power on mode, data rate o/p 50 Hz(0x27)
+	char config[2] = {0};
+	config[0] = 0x20;
+	config[1] = 0x27;
+	write(file, config, 2);
 
+	// Select control register4(0x23)
+	// Full scale +/- 6g, continuous update(0x00)
+	config[0] = 0x23;
+	config[1] = 0x00;
+	write(file, config, 2);
+	sleep(1);
+	
+	// Read 6 bytes of data
+	// lsb first
+	// Read xAccl lsb data from register(0x28)
+	char reg[1] = {0x28};
+	write(file, reg, 1);
+	char data[1] = {0};
+	if(read(file, data, 1) != 1)
+	{
+		printf("Erorr : Input/output Erorr \n");
+		exit(1);
+	}
+	char data_0 = data[0];
 
+	// Read xAccl msb data from register(0x29)
+	reg[0] = 0x29;
+	write(file, reg, 1);
+	read(file, data, 1);
+	char data_1 = data[0];
 
+	// Read yAccl lsb data from register(0x2A)
+	reg[0] = 0x2A;
+	write(file, reg, 1);
+	read(file, data, 1);
+	char data_2 = data[0];
 
-    // unsigned char w1[1] = {0x28};
-    // //unsigned char X_MSB, X_LSB, Y_MSB, Y_LSB, Z_MSB, Z_LSB;
-    // writeval = write(file, w1, 1);
-    // if(writeval == -1){
-    // 	printf("Error in write\n");
-    // }
-    // printf("writeval %d\n", writeval);
-    // for (int i = 0; i<6; i++) {
-    //     // Using I2C Read
-    //     int readval = read(file,buf,2);
-    //     printf("readval : %d\n", readval);
-    //     if (readval != 2) {
-    //         /* ERROR HANDLING: i2c transaction failed */
-    //         printf("Failed to read from the i2c bus: %s.\n", strerror(errno));
-    //             printf("\n");
-    //     } else {
-    //     	printf("to do calculation\n");
-    //     	printf("%x %x\n", buf[0], buf[1]);
-    //     	;
-    //         /* Device specific stuff here */
-    //     }
-    // }
+	// Read yAccl msb data from register(0x2B)
+	reg[0] = 0x2B;
+	write(file, reg, 1);
+	read(file, data, 1);
+	char data_3 = data[0];
 
+	// Read zAccl lsb data from register(0x2C)
+	reg[0] = 0x2C;
+	write(file, reg, 1);
+	read(file, data, 1);
+	char data_4 = data[0];
 
-    // unsigned char w2[1] = {0x31};
-    // //unsigned char X_MSB, X_LSB, Y_MSB, Y_LSB, Z_MSB, Z_LSB;
-    // writeval = write(file, w2, 1);
-    // if(writeval == -1){
-    // 	printf("Error in write\n");
-    // }
+	// Read zAccl msb data from register(0x2D)
+	reg[0] = 0x2D;
+	write(file, reg, 1);
+	read(file, data, 1);
+	char data_5 = data[0];
+	
+	// Convert the data
+	int xAccl = (data_1 * 256 + data_0);
+	if(xAccl > 32767)
+	{
+		xAccl -= 65536;
+	}
 
-    // printf("writeval %d\n", writeval);
-    // for (int i = 0; i<6; i++) {
-    //     // Using I2C Read
-    //     int readval = read(file,buf,6);
-    //     printf("readval : %d\n", readval);
-    //     if (readval != 6) {
-    //         /* ERROR HANDLING: i2c transaction failed */
-    //         printf("Failed to read from the i2c bus: %s.\n", strerror(errno));
-    //             printf("\n");
-    //     } else {
-    //     	printf("to do calculation\n");
-    //     	printf("%x %x\n", buf[0], buf[1]);
-    //     	printf("%x %x\n", buf[2], buf[3]);
-    //     	printf("%x %x\n", buf[4], buf[5]);
-    //         /* Device specific stuff here */
-    //     }
-    // }
+	int yAccl = (data_3 * 256 + data_2);
+	if(yAccl > 32767)
+	{
+		yAccl -= 65536;
+	}
 
+	int zAccl = (data_5 * 256 + data_4);
+	if(zAccl > 32767)
+	{
+		zAccl -= 65536;
+	}
 
-    // unsigned char w3[1] = {0x29};
-    // //unsigned char X_MSB, X_LSB, Y_MSB, Y_LSB, Z_MSB, Z_LSB;
-    // writeval = write(file, w3, 1);
-    // if(writeval == -1){
-    // 	printf("Error in write\n");
-    // }
-    // printf("writeval %d\n", writeval);
-    // for (int i = 0; i<6; i++) {
-    //     // Using I2C Read
-    //     int readval = read(file,buf,2);
-    //     printf("readval : %d\n", readval);
-    //     if (readval != 6) {
-    //         /* ERROR HANDLING: i2c transaction failed */
-    //         printf("Failed to read from the i2c bus: %s.\n", strerror(errno));
-    //             printf("\n");
-    //     } else {
-    //     	printf("to do calculation\n");
-    //     	printf("%x %x\n", buf[0], buf[1]);
-    //         /* Device specific stuff here */
-    //     }
-    // }
+	// Output data to screen
+	printf("Acceleration in X-Axis : %d \n", xAccl);
+	printf("Acceleration in Y-Axis : %d \n", yAccl);
+	printf("Acceleration in Z-Axis : %d \n", zAccl);
 }

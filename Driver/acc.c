@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
 
     // ignore arguments!
 
-    //while (1) {
+    while (1) {
       
       // read X and Y and Z from the register
       if( get_i2c_register(i2c_file, LIS331_I2CADDR, LIS331_XOUT8, &x) ||
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
       }
 
       printf("X = %d\tY = %d\tZ = %d\n", x, y, z); 
-    //}
+    }
 
     close(i2c_file);
     return 0;
