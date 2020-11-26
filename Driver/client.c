@@ -29,6 +29,7 @@ pthread_mutex_t mutex;
 int main(int argc, char const *argv[]) 
 { 
 
+	printf("inside main\n");
 	int FLAG=0;
 	if(argv[1] == NULL){
 		FLAG = 0;
