@@ -44,12 +44,13 @@ int main(int argc, char const *argv[])
 			exit(1);
 		}
 	}
-
+	printf("after daemon check\n");
 	if (pthread_mutex_init(&mutex, NULL) != 0) { 
         printf("\n mutex init has failed\n"); 
-        return 1; 
+        return -1; 
     } 
 
+    printf("pthread_mutex_init\n");
 	int sock = 0, valread; 
 	struct sockaddr_in serv_addr; 
 	//char *hello = "Hello from client\n"; 
@@ -60,6 +61,7 @@ int main(int argc, char const *argv[])
 		return -1; 
 	} 
 
+	printf("socket\n");
 	serv_addr.sin_family = AF_INET; 
 	serv_addr.sin_port = htons(PORT); 
 	
@@ -76,6 +78,7 @@ int main(int argc, char const *argv[])
 		return -1; 
 	} 
 
+	printf("deamon start\n");
 	if(FLAG == 1){
     	syslog(LOG_INFO,"starting daemon");
     	pid_t pid;//, sid;
@@ -111,6 +114,7 @@ int main(int argc, char const *argv[])
         close(STDOUT_FILENO);
         close(STDERR_FILENO);
     }
+    printf("deamin end\n");
     while(1){
 	    int readln, valsend;
 		char *buffer = (char*)malloc(sizeof(char));
