@@ -14,8 +14,17 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <syslog.h>
+#include <pthread.h>
 
 #define PORT 9000 
+
+pthread_mutex_t mutex;
+
+/*int send_char(){
+	
+    return 0;
+}*/
+
 
 int main(int argc, char const *argv[]) 
 { 
@@ -35,10 +44,15 @@ int main(int argc, char const *argv[])
 		}
 	}
 
+	if (pthread_mutex_init(&mutex, NULL) != 0) { 
+        printf("\n mutex init has failed\n"); 
+        return 1; 
+    } 
+
 	int sock = 0, valread; 
 	struct sockaddr_in serv_addr; 
-	char *hello = "Hello from client\n"; 
-	char buffer[1024] = {0}; 
+	//char *hello = "Hello from client\n"; 
+	char buffer1[1024] = {0}; 
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
 	{ 
 		printf("\n Socket creation error \n"); 
@@ -49,7 +63,7 @@ int main(int argc, char const *argv[])
 	serv_addr.sin_port = htons(PORT); 
 	
 	// Convert IPv4 and IPv6 addresses from text to binary form 
-	if(inet_pton(AF_INET, "192.168.0.2", &serv_addr.sin_addr)<=0) 
+	if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) 
 	{ 
 		printf("\nInvalid address/ Address not supported \n"); 
 		return -1; 
@@ -96,13 +110,38 @@ int main(int argc, char const *argv[])
         close(STDOUT_FILENO);
         close(STDERR_FILENO);
     }
+    while(1){
+	    int readln, valsend;
+		char *buffer = (char*)malloc(sizeof(char));
+		int fd = open("/var/tmp/accdata.txt", O_RDWR|O_CREAT|O_APPEND, S_IRWXU|S_IRWXG|S_IRWXO);
+	    if(fd<0){
+	    	syslog(LOG_INFO,"Error in opening file");
+	    	return -1;
+	    }
+	    pthread_mutex_lock(&mutex);
+	    while((int)buffer[0]!=10){
+	    	readln = read(fd, buffer, 1);
+	    	if(readln<0){
+	    		syslog(LOG_INFO, "error in read");
+	    	}
+	    	valsend = send(sock, buffer, 1, 0);
+	    	if(valsend <0){
+				syslog(LOG_INFO, "error in send");
+			}
+		}
+		//send(sock , hello , strlen(hello) , 0 ); 
+		//printf("Hello message sent\n"); 
+		valread = read( sock , buffer1, 1024); 
+		if(valread == -1){
+			printf("connection failed");
+		}
+		//printf("%s\n",buffer );
+		if(strcmp(buffer1, "received") != 0){
+			printf("Data error\n");
+		}
 
-	send(sock , hello , strlen(hello) , 0 ); 
-	printf("Hello message sent\n"); 
-	valread = read( sock , buffer, 1024); 
-	if(valread == -1){
-		printf("connection failed");
+	    pthread_mutex_unlock(&mutex);
+	    close(fd);
 	}
-	printf("%s\n",buffer ); 
 	return 0; 
 } 

@@ -156,21 +156,21 @@ int main(int argc, char const *argv [])
 		
 		// Convert the data
 		int xAccl = (data_1 * 256 + data_0);
-		printf("x: %x  %x", data_1, data_0);
+		printf("x: %x  %x\n", data_1, data_0);
 		if(xAccl > 32767)
 		{
 			xAccl -= 65536;
 		}
 
 		int yAccl = (data_3 * 256 + data_2);
-		printf("y: %x  %x", data_3, data_2);
+		printf("y: %x  %x\n", data_3, data_2);
 		if(yAccl > 32767)
 		{
 			yAccl -= 65536;
 		}
 
 		int zAccl = (data_5 * 256 + data_4);
-		printf("z: %x  %x", data_5, data_4);
+		printf("z: %x  %x\n", data_5, data_4);
 		if(zAccl > 32767)
 		{
 			zAccl -= 65536;
