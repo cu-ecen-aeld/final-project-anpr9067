@@ -114,7 +114,7 @@ int main(int argc, char const *argv[])
         close(STDOUT_FILENO);
         close(STDERR_FILENO);
     }
-    printf("deamin end\n");
+    printf("daemin end\n");
     while(1){
     	printf("inside while 1\n");
 	    int readln, valsend;
@@ -127,8 +127,8 @@ int main(int argc, char const *argv[])
 	    }
 	    printf("opened file");
 	    pthread_mutex_lock(&mutex);
-	    while((int)buffer[0]!=10){
-	    	printf("inside while");
+	    //while((int)buffer[0]!=10){
+	    	//printf("inside while");
 	    	readln = read(fd, buffer, 1);
 	    	if(readln<0){
 	    		syslog(LOG_INFO, "error in read");
@@ -137,8 +137,8 @@ int main(int argc, char const *argv[])
 	    	if(valsend <0){
 				syslog(LOG_INFO, "error in send");
 			}
-		}
-		printf("outside while");
+		//}//
+		//printf("outside while");
 		//send(sock , hello , strlen(hello) , 0 ); 
 		//printf("Hello message sent\n"); 
 		valread = read( sock , buffer1, 1024); 
