@@ -118,8 +118,10 @@ int main(int argc, char const *argv[])
 	    	syslog(LOG_INFO,"Error in opening file");
 	    	return -1;
 	    }
+	    printf("opened file");
 	    pthread_mutex_lock(&mutex);
 	    while((int)buffer[0]!=10){
+	    	printf("inside while");
 	    	readln = read(fd, buffer, 1);
 	    	if(readln<0){
 	    		syslog(LOG_INFO, "error in read");
@@ -129,6 +131,7 @@ int main(int argc, char const *argv[])
 				syslog(LOG_INFO, "error in send");
 			}
 		}
+		printf("outside while");
 		//send(sock , hello , strlen(hello) , 0 ); 
 		//printf("Hello message sent\n"); 
 		valread = read( sock , buffer1, 1024); 
