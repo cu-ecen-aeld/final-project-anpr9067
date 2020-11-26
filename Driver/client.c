@@ -116,10 +116,12 @@ int main(int argc, char const *argv[])
     }
     printf("deamin end\n");
     while(1){
+    	printf("inside while 1\n");
 	    int readln, valsend;
 		char *buffer = (char*)malloc(sizeof(char));
 		int fd = open("/var/tmp/accdata.txt", O_RDWR|O_CREAT|O_APPEND, S_IRWXU|S_IRWXG|S_IRWXO);
 	    if(fd<0){
+	    	printf("file error\n");	
 	    	syslog(LOG_INFO,"Error in opening file");
 	    	return -1;
 	    }
