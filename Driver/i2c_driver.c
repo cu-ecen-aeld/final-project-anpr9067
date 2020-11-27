@@ -181,7 +181,7 @@ int main(int argc, char const *argv [])
 		printf("Acceleration in Y-Axis : %d \n", yAccl);
 		printf("Acceleration in Z-Axis : %d \n", zAccl);
 
-		sprintf(val, "X:%d Y:%d Z:%d\n", xAccl, yAccl, zAccl);
+		sprintf(val, "X:%d, Y:%d, Z:%d\n", xAccl, yAccl, zAccl);
 
 		append_file(val, strlen(val));
 
