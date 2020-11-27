@@ -65,19 +65,6 @@ int main(int argc, char const *argv[])
 	serv_addr.sin_family = AF_INET; 
 	serv_addr.sin_port = htons(PORT); 
 	
-	// Convert IPv4 and IPv6 addresses from text to binary form 
-	if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) 
-	{ 
-		printf("\nInvalid address/ Address not supported \n"); 
-		return -1; 
-	} 
-
-	if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 
-	{ 
-		printf("\nConnection Failed \n"); 
-		return -1; 
-	} 
-
 	printf("deamon start\n");
 	if(FLAG == 1){
     	syslog(LOG_INFO,"starting daemon");
@@ -115,7 +102,21 @@ int main(int argc, char const *argv[])
         close(STDERR_FILENO);
     }
     printf("daemin end\n");
+
     while(1){
+// Convert IPv4 and IPv6 addresses from text to binary form 
+		if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) 
+		{ 
+			printf("\nInvalid address/ Address not supported \n"); 
+			return -1; 
+		} 
+
+		if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 
+		{ 
+			printf("\nConnection Failed \n"); 
+			return -1; 
+		} 
+    	
     	printf("inside while 1\n");
 	    int readln, valsend;
 		char *buffer = (char*)malloc(sizeof(char));
@@ -131,10 +132,12 @@ int main(int argc, char const *argv[])
 	    	//printf("inside while");
 	    	readln = read(fd, buffer, 1);
 	    	if(readln<0){
+	    		printf("error in read");
 	    		syslog(LOG_INFO, "error in read");
 	    	}
 	    	valsend = send(sock, buffer, 1, 0);
 	    	if(valsend <0){
+	    		printf("error in send");
 				syslog(LOG_INFO, "error in send");
 			}
 		//}//
@@ -146,9 +149,9 @@ int main(int argc, char const *argv[])
 			printf("connection failed");
 		}
 		//printf("%s\n",buffer );
-		if(strcmp(buffer1, "received") != 0){
+		/*if(strcmp(buffer1, "received") != 0){
 			printf("Data error\n");
-		}
+		}*/
 
 	    pthread_mutex_unlock(&mutex);
 	    close(fd);
