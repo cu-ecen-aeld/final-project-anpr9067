@@ -135,7 +135,7 @@ int main(int argc, char const *argv[])
 	serv_addr.sin_family = AF_INET; 
 	serv_addr.sin_port = htons(PORT); 
 
-	if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) 
+	if(inet_pton(AF_INET, "192.168.0.2", &serv_addr.sin_addr)<=0) 
 	{ 
 		printf("\nInvalid address/ Address not supported \n"); 
 		return -1; 
@@ -195,15 +195,15 @@ int main(int argc, char const *argv[])
         if(readln<0){
         	printf("Error in read\n");
         }
-        printf("read messgae: %s", buffer);
+        printf("read messgae: %s  \n", buffer);
 		valsend = send(sock , buffer , 1 , 0 ); 
-		printf("Hello message sent: %d\n", valsend);
+		printf("message sent\n");
 		if(valsend == -1){
 			printf("Error in send\n");
 		} 
 		valread = read( sock , buffer, 1024); 
 		if(valread == -1){
-			printf("connection failed");
+			printf("connection failed\n");
 		}
 		printf("%s\n",buffer ); 
 		

@@ -85,6 +85,7 @@ int main(int argc, char const *argv []){
     //int addrlen = sizeof(address); 
     char myIP[16];
     char buffer[1024];
+    char *buff = "received\n";
     int recvMsgSize, fd;      
 
     syslog(LOG_INFO,"setsockopt created \n");
@@ -208,7 +209,7 @@ int main(int argc, char const *argv []){
             syslog(LOG_INFO, "error in write\n");
         }
         printf("write done: %d\n", recvMsgSize);
-        valsend = send(new_socket, "received\n", strlen("received\n"), 0);
+        valsend = send(new_socket, buff, strlen(buff), 0);
         if(valsend <0){
             printf("Error in send\n");
             syslog(LOG_INFO, "error in send\n");
