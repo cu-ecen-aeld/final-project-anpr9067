@@ -65,7 +65,15 @@ int main(int argc, char const *argv[])
 	serv_addr.sin_family = AF_INET; 
 	serv_addr.sin_port = htons(PORT); 
 	
-	printf("deamon start\n");
+	
+
+    if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) 
+	{ 
+		printf("\nInvalid address/ Address not supported \n"); 
+		return -1; 
+	} 
+
+    printf("deamon start\n");
 	if(FLAG == 1){
     	syslog(LOG_INFO,"starting daemon");
     	pid_t pid;//, sid;
@@ -105,18 +113,14 @@ int main(int argc, char const *argv[])
 
     while(1){
 // Convert IPv4 and IPv6 addresses from text to binary form 
-		if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) 
-		{ 
-			printf("\nInvalid address/ Address not supported \n"); 
-			return -1; 
-		} 
+		
 
 		if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 
 		{ 
 			printf("\nConnection Failed \n"); 
 			return -1; 
 		} 
-    	
+
     	printf("inside while 1\n");
 	    int readln, valsend;
 		char *buffer = (char*)malloc(sizeof(char));
