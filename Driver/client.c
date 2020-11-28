@@ -1,86 +1,3 @@
-/*
-/ @description: Client socket program
-/ @date: 12th November 2020
-/ @author: Pavan Shiralagi
-/ Reference: https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/
-*/
-/*#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <syslog.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <sys/shm.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-
-#define MAX 20
-#define PORT 9000
-#define SA struct sockaddr
-
-int main(int argc, char *argv[]) 
-{ 
-	int sockfd, i; 
-	struct sockaddr_in servaddr; 
-	for(i = 1; i < argc; i++)
-	{
-		if (strcmp(argv[i], "-d") == 0)
-		{
-			printf("Daemon\n\r");
-			daemon(1, 1);
-		}	
-	}
-	// socket create and varification 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
-	if (sockfd == -1) { 
-		printf("socket creation failed...\n"); 
-		exit(0); 
-	} 
-	else
-	printf("Socket successfully created..\n"); 
-	bzero(&servaddr, sizeof(servaddr)); 
-
-	// assign IP, PORT 
-	servaddr.sin_family = AF_INET; 
-	servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
-	servaddr.sin_port = htons(PORT); 
-
-	// connect the client socket to server socket 
-	if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) != 0) { 
-		printf("connection with the server failed...\n"); 
-		exit(0); 
-		} 
-		else
-			printf("connected to the server..\n"); 
-
-	printf("Before while..\n"); 
-	while(1)
-	{
-
-		printf("inside while\n");
-		char buffer[1024];
-		int valsend = send(sockfd , "hello\n" , strlen("hello\n") , 0 ); 
-		printf("Hello message sent: %d\n", valsend);
-		if(valsend == -1){
-			printf("Error in send\n");
-		} 
-		int valread = read( sockfd , buffer, 1024); 
-		if(valread == -1){
-			printf("connection failed\n");
-		}
-		printf("buffer: %s\n",buffer );
-	}
- 
-	close(sockfd); 
-}*/
 
 #include <stdio.h> 
 #include <sys/socket.h> 
@@ -135,7 +52,7 @@ int main(int argc, char const *argv[])
 	serv_addr.sin_family = AF_INET; 
 	serv_addr.sin_port = htons(PORT); 
 
-	if(inet_pton(AF_INET, "192.168.1.10", &serv_addr.sin_addr)<=0) 
+	if(inet_pton(AF_INET, "192.168.1.15", &serv_addr.sin_addr)<=0) 
 	{ 
 		printf("\nInvalid address/ Address not supported \n"); 
 		return -1; 
