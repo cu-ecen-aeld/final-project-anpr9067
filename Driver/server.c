@@ -59,11 +59,10 @@ int main(int argc, char const *argv []){
             exit(1);
         }
     }
-    syslog(LOG_INFO,"Error check complete \n");
+
     openlog("aesdsocket.c", LOG_CONS, LOG_USER);
     syslog(LOG_INFO, "CHECKING SYSLOG IS OPENED FOR SOCKET TESTING");
     
-
     struct sigaction sa;
     sa.sa_handler = sig_handler;
     sigemptyset(&sa.sa_mask);
@@ -116,7 +115,6 @@ int main(int argc, char const *argv []){
         exit(EXIT_FAILURE); 
     }
     syslog(LOG_INFO,"Daemon process \n");
-    //printf("strcmp value %d\n", strcmp(argv[1], "-d"));
     // creating daemon
     if(FLAG == 1){
         syslog(LOG_INFO,"starting daemon");
@@ -161,9 +159,9 @@ int main(int argc, char const *argv []){
     } 
     syslog(LOG_INFO,"Listening \n");
     clntLen = sizeof(cli_address);
-    printf("Before accept\n");
+    
     new_socket = accept(server_fd, (struct sockaddr *)&cli_address,  &clntLen);
-    printf("new_socket: %d\n", new_socket);
+    
     syslog(LOG_INFO,"%d new_socket\n", new_socket);
     if (new_socket==-1) 
     { 
@@ -171,17 +169,13 @@ int main(int argc, char const *argv []){
         exit(EXIT_FAILURE);
     }
     syslog(LOG_INFO,"Connection accepted");
-    printf("Connection accepted\n");
 
     while(1){
 
-        printf("inside while(1)\n");
         //buffer = (char*) malloc(BUFFER_SIZE*sizeof(char));
         syslog(LOG_INFO,"inside While \n");
-       
-
         bzero(&cli_address, sizeof(cli_address));
-        //int len = sizeof(cli_address);
+
         getsockname(new_socket, (struct sockaddr *) &cli_address, &clntLen);
         inet_ntop(AF_INET, &cli_address.sin_addr, myIP, sizeof(myIP));
         myPort = ntohs(cli_address.sin_port);
@@ -189,29 +183,24 @@ int main(int argc, char const *argv []){
         syslog(LOG_INFO,"connected to ip address: %s\n", myIP);
         syslog(LOG_INFO,"connected to Local port : %u\n", myPort);
 
-    //int byte_size=0;
-        //buffer = (char*) malloc(BUFFER_SIZE*sizeof(char));
         valrecv = recv(new_socket , buffer, BUFFER_SIZE, 0);
        
         if(valrecv <0){
             syslog(LOG_INFO, "receive failed");
         }
-        printf("recieve done: %s", buffer);
+        syslog(LOG_INFO,"recieve done: %s", buffer);
         fd = open("/var/tmp/aesdsocketdata.txt", O_RDWR|O_CREAT|O_APPEND, S_IRWXU|S_IRWXG|S_IRWXO);
         if(fd<0){
-            printf("Error in opening file");
             syslog(LOG_INFO,"Error in opening file");
         }
         //total_bytes += byte_size;
         recvMsgSize = write(fd, buffer, valrecv);
         if(recvMsgSize<0){
-            printf("Error in write\n");
             syslog(LOG_INFO, "error in write\n");
         }
-        printf("write done: %d\n", recvMsgSize);
+        syslog(LOG_INFO,"write done: %d\n", recvMsgSize);
         valsend = send(new_socket, buff, strlen(buff), 0);
         if(valsend <0){
-            printf("Error in send\n");
             syslog(LOG_INFO, "error in send\n");
         }       
         close(fd);

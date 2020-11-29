@@ -22,19 +22,22 @@
 int main(int argc, char const *argv[]) 
 { 
 
-	int FLAG=0;
+	
+	char ipaddr[15] = "127.0.0.1";
 	if(argv[1] == NULL){
-		FLAG = 0;
-		//without daemon
+		printf("default ipaddr");
 	}else{
-		if(strcmp(argv[1], "-d") == 0){
+		//ipaddr = argv[1];
+		strcpy(ipaddr, argv[1]);
+		printf("%s\n", ipaddr);
+		/*if(strcmp(argv[1], "-d") == 0){
 			//daemon process
 			FLAG=1;
 			syslog(LOG_INFO,"daemon mode");
 		}else{
 			syslog(LOG_INFO, "Invalid argument");
 			exit(1);
-		}
+		}*/
 	}
 
 	int sock = 0, valread; 
@@ -50,9 +53,10 @@ int main(int argc, char const *argv[])
 	} 
 
 	serv_addr.sin_family = AF_INET; 
+	//serv_addr.sin_addr.s_addr = inet_addr("10.0.0.136");
 	serv_addr.sin_port = htons(PORT); 
 
-	if(inet_pton(AF_INET, "10.0.0.104", &serv_addr.sin_addr)<=0) 
+	if(inet_pton(AF_INET, ipaddr, &serv_addr.sin_addr)<=0) 
 	{ 
 		printf("\nInvalid address/ Address not supported \n"); 
 		return -1; 
@@ -63,42 +67,6 @@ int main(int argc, char const *argv[])
 		printf("\nConnection Failed \n"); 
 		return -1; 
 	} 
-
-	if(FLAG == 1){
-    	syslog(LOG_INFO,"starting daemon");
-    	pid_t pid;//, sid;
-    	pid = fork();
-    	if(pid<0){
-    		syslog(LOG_ERR, "Error in creating child");
-    		exit(1);
-    	}
-        /* If we got a good PID, then
-           we can exit the parent process. */
-        if (pid > 0) {
-                syslog(LOG_INFO, "Child created");
-                exit(0);
-        }
-        /* Change the file mode mask */
-        umask(0);
-        /* Open any logs here */               
-        /* Create a new SID for the child process */
-        //sid = ;
-        if (setsid() < 0) {
-                /* Log the failure */
-        		syslog(LOG_ERR, "Error in creating SID for child process");
-                exit(EXIT_FAILURE);
-        }
-        /* Change the current working directory */
-        if ((chdir("/")) < 0) {
-                syslog(LOG_ERR, "Error in changing current directory");
-                exit(EXIT_FAILURE);
-        }
-        
-        /* Close out the standard file descriptors */
-        close(STDIN_FILENO);
-        close(STDOUT_FILENO);
-        close(STDERR_FILENO);
-    }
    	
    	fd = open("/var/tmp/accdata.txt", O_RDWR|O_CREAT|O_APPEND, S_IRWXU|S_IRWXG|S_IRWXO);
     	if(fd<0){
