@@ -18,6 +18,41 @@
 
 #define PORT 9000 
 
+void sig_handler(int signo){
+    if(signo == SIGINT){
+        syslog(LOG_INFO, "Caught signal, exiting");
+        exit(1);
+    }
+    if(signo == SIGTERM){
+        syslog(LOG_INFO, "Caught signal, exiting");
+        exit(1);
+    }
+}
+
+int get_set_value(int fd, int sock){
+	int readln, valsend;
+	char *buffer = (char*)malloc(sizeof(char));
+	char acc_val[1024];
+	int i=0;
+	
+	while((int)buffer[0] != 10){
+		readln = read(fd, buffer, 1);
+		if(readln <0){
+			printf("error in read\n");
+			return -1;
+		}
+		acc_val[i] = buffer[0];
+		i++;
+	}
+
+	valsend = send(sock , acc_val , i , 0 ); 
+	
+	if(valsend == -1){
+		printf("Error in send\n");
+		return -1;
+	} 
+	return 0;
+}
 
 int main(int argc, char const *argv[]) 
 { 
@@ -27,21 +62,25 @@ int main(int argc, char const *argv[])
 	if(argv[1] == NULL){
 		printf("default ipaddr");
 	}else{
-		//ipaddr = argv[1];
 		strcpy(ipaddr, argv[1]);
 		printf("%s\n", ipaddr);
-		/*if(strcmp(argv[1], "-d") == 0){
-			//daemon process
-			FLAG=1;
-			syslog(LOG_INFO,"daemon mode");
-		}else{
-			syslog(LOG_INFO, "Invalid argument");
-			exit(1);
-		}*/
 	}
 
+	struct sigaction sa;
+    sa.sa_handler = sig_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART; /* Restart functions if
+                                 interrupted by handler */
+    if (sigaction(SIGINT, &sa, NULL) == -1){
+        syslog(LOG_ERR, "Error in siginit");
+    }
+    if (sigaction(SIGTERM, &sa, NULL) == -1){
+        syslog(LOG_ERR, "Error in siginit");
+    }
+    syslog(LOG_INFO,"SIgnal check init \n");
+
 	int sock = 0, valread; 
-	int valsend, fd, readln;
+	int fd;//valsend, fd;//, readln;
 
 	struct sockaddr_in serv_addr; 
 	//char *hello = "Hello from client\n"; 
@@ -52,8 +91,7 @@ int main(int argc, char const *argv[])
 		return -1; 
 	} 
 
-	serv_addr.sin_family = AF_INET; 
-	//serv_addr.sin_addr.s_addr = inet_addr("10.0.0.136");
+	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(PORT); 
 
 	if(inet_pton(AF_INET, ipaddr, &serv_addr.sin_addr)<=0) 
@@ -74,23 +112,15 @@ int main(int argc, char const *argv[])
     	}
     while(1){
 
-    	
-    	// Convert IPv4 and IPv6 addresses from text to binary form 
-        readln = read(fd, buffer, 1);
-        if(readln<0){
-        	printf("Error in read\n");
-        }
-        printf("read messgae: %s  \n", buffer);
-		valsend = send(sock , buffer , 1 , 0 ); 
-		printf("message sent\n");
-		if(valsend == -1){
-			printf("Error in send\n");
-		} 
-		valread = read( sock , buffer, 1024); 
+		int val = get_set_value(fd, sock);
+		if(val < 0){
+			printf("error\n");
+		}
+		valread = read(sock , buffer, 1024); 
 		if(valread == -1){
 			printf("connection failed\n");
 		}
-		printf("%s\n",buffer ); 
+		printf("%s\n",buffer); 
 		
 	}
 	close(fd);

@@ -8,7 +8,7 @@
 
 int main(){
 	int recvMsgSize;
-	char *buffer = "Hello from the test script\n";
+	char *buffer = "X:999123, Y:4563, Z:-111\n";;
 	while(1){
 		int fd;
 		fd = open("/var/tmp/accdata.txt", O_RDWR|O_CREAT|O_APPEND, S_IRWXU|S_IRWXG|S_IRWXO);

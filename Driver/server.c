@@ -43,6 +43,76 @@ void sig_handler(int signo){
     }
 }
 
+
+
+int data_integrity(char buffer[]){
+    //printf("Inside function\n");
+    char* token = strtok(buffer, ", ");
+    char * ip[3];
+    int i=0;
+    while(token != NULL){
+        ip[i] = token;
+        token = strtok(NULL, ", ");
+        i++;
+    }
+
+    if((int)ip[0][0] != 88){
+        return -1;
+    }else{
+        char* token1 = strtok(ip[0], ":");
+        char * ip1[2];
+        int j=0;
+        while(token1 != NULL){
+            ip1[j] = token1;
+            token1 = strtok(NULL, ":");
+            j++;
+        }
+        int X = atoi(ip1[1]);
+        if(X <-32767 || X >32767){
+            return -1;
+        }else
+            return 0;
+    }
+
+    if((int)ip[1][0] != 89){
+        return -1;
+    }else{
+        char* token2 = strtok(ip[1], ":");
+        char * ip2[2];
+        int k=0;
+        while(token2 != NULL){
+            ip2[k] = token2;
+            token2 = strtok(NULL, ":");
+            k++;
+        }
+        int Y = atoi(ip2[1]);
+        if(Y<-32767 || Y>32767){
+            return -1;
+        }else
+            return 0;
+    }
+
+    if((int)ip[2][0] != 90){
+        return -1;
+    }
+    else{
+        char* token3 = strtok(ip[2], ":");
+        char * ip3[2];
+        int l=0;
+        while(token3 != NULL){
+            ip3[l] = token3;
+            token3 = strtok(NULL, ":");
+            l++;
+        }
+        int Z = atoi(ip3[1]);
+        if(Z<-32767 || Z>32767){
+            return -1;
+        }else
+            return 0;
+    }
+    return 0;
+}
+
 int main(int argc, char const *argv []){
 
     int FLAG=0;
@@ -84,6 +154,7 @@ int main(int argc, char const *argv []){
     //int addrlen = sizeof(address); 
     char myIP[16];
     char buffer[1024];
+    //char acc_val[1024];
     char *buff = "received\n";
     int recvMsgSize, fd;      
 
@@ -170,30 +241,35 @@ int main(int argc, char const *argv []){
     }
     syslog(LOG_INFO,"Connection accepted");
 
+    bzero(&cli_address, sizeof(cli_address));
+
+    getsockname(new_socket, (struct sockaddr *) &cli_address, &clntLen);
+    inet_ntop(AF_INET, &cli_address.sin_addr, myIP, sizeof(myIP));
+    myPort = ntohs(cli_address.sin_port);
+
+    syslog(LOG_INFO,"connected to ip address: %s\n", myIP);
+    syslog(LOG_INFO,"connected to Local port : %u\n", myPort);
+
     while(1){
-
-        //buffer = (char*) malloc(BUFFER_SIZE*sizeof(char));
-        syslog(LOG_INFO,"inside While \n");
-        bzero(&cli_address, sizeof(cli_address));
-
-        getsockname(new_socket, (struct sockaddr *) &cli_address, &clntLen);
-        inet_ntop(AF_INET, &cli_address.sin_addr, myIP, sizeof(myIP));
-        myPort = ntohs(cli_address.sin_port);
-
-        syslog(LOG_INFO,"connected to ip address: %s\n", myIP);
-        syslog(LOG_INFO,"connected to Local port : %u\n", myPort);
 
         valrecv = recv(new_socket , buffer, BUFFER_SIZE, 0);
        
         if(valrecv <0){
             syslog(LOG_INFO, "receive failed");
         }
-        syslog(LOG_INFO,"recieve done: %s", buffer);
+
+        int val = data_integrity(buffer);
+        if(val<0){
+            buff = "Courrupt data sent\n";
+        }else{
+            buff = "Valid data recieved\n";
+        }
+        printf("outside function\n");
         fd = open("/var/tmp/aesdsocketdata.txt", O_RDWR|O_CREAT|O_APPEND, S_IRWXU|S_IRWXG|S_IRWXO);
         if(fd<0){
             syslog(LOG_INFO,"Error in opening file");
         }
-        //total_bytes += byte_size;
+        
         recvMsgSize = write(fd, buffer, valrecv);
         if(recvMsgSize<0){
             syslog(LOG_INFO, "error in write\n");
